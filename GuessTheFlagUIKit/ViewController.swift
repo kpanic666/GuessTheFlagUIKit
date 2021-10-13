@@ -15,12 +15,15 @@ class ViewController: UIViewController {
     var countries = [String]()
     var score = 0
     var correctAnswer = 0
+    var questionsAsked = 0
+    
+    static let questionsPerRound = 10
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         countries.append(contentsOf: ["estonia", "france", "germany", "ireland", "italy", "monaco", "nigeria",
-                                     "poland", "russia", "spain", "uk", "us"])
+                                      "poland", "russia", "spain", "uk", "us"])
         
         button1.layer.borderWidth = 1
         button2.layer.borderWidth = 1
@@ -33,7 +36,7 @@ class ViewController: UIViewController {
         askQuestion()
     }
     
-    func askQuestion(action: UIAlertAction! = nil) {
+    func askQuestion() {
         countries.shuffle()
         
         button1.setImage(UIImage(named: countries[0]), for: .normal)
@@ -41,21 +44,48 @@ class ViewController: UIViewController {
         button3.setImage(UIImage(named: countries[2]), for: .normal)
         
         correctAnswer = Int.random(in: 0...2)
-        title = countries[correctAnswer].uppercased()
+        title = "You need to pick: \(countries[correctAnswer].uppercased()) \tScore: \(score)"
     }
-
+    
+    func resetGame() {
+        score = 0
+        questionsAsked = 0
+        
+        askQuestion()
+    }
+    
     @IBAction func buttonTapped(_ sender: UIButton) {
         if sender.tag == correctAnswer {
             title = "Correct"
             score += 1
         } else {
-            title = "Wrong"
+            let ac = UIAlertController(
+                title: "Negative",
+                message: "Wrong! That's the flag of \(countries[sender.tag].uppercased())",
+                preferredStyle: .alert
+            )
+            ac.addAction(UIAlertAction(title: "My fault", style: .default))
+            present(ac, animated: true)
             score -= 1
         }
         
-        let ac = UIAlertController(title: title, message: "Your score is \(score).", preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "Continue", style: .default, handler: askQuestion))
-        present(ac, animated: true)
+        questionsAsked += 1
+        title?.append(". Question \(questionsAsked) of \(Self.questionsPerRound)")
+        
+        if questionsAsked == Self.questionsPerRound {
+            let ac = UIAlertController(title: "Game Over", message: "Your score is \(score).", preferredStyle: .actionSheet)
+            ac.addAction(UIAlertAction(
+                title: "Continue",
+                style: .default,
+                handler: { _ in
+                    self.resetGame()
+                }
+            ))
+            present(ac, animated: true)
+        } else {
+            askQuestion()
+        }
+        
     }
 }
 
