@@ -33,7 +33,20 @@ class ViewController: UIViewController {
         button2.layer.borderColor = UIColor.lightGray.cgColor
         button3.layer.borderColor = UIColor.lightGray.cgColor
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "gamecontroller"),
+            style: .plain,
+            target: self,
+            action: #selector(showScore)
+        )
+        
         askQuestion()
+    }
+    
+    @objc func showScore() {
+        let alertVC = UIAlertController(title: "Score", message: "Your score is \(score)", preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alertVC, animated: true)
     }
     
     func askQuestion() {
@@ -44,7 +57,7 @@ class ViewController: UIViewController {
         button3.setImage(UIImage(named: countries[2]), for: .normal)
         
         correctAnswer = Int.random(in: 0...2)
-        title = "You need to pick: \(countries[correctAnswer].uppercased()) \tScore: \(score)"
+        title = "Pick: \(countries[correctAnswer].uppercased()) Score: \(score)"
     }
     
     func resetGame() {
