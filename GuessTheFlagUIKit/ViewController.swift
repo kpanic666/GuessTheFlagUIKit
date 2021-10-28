@@ -12,8 +12,11 @@ class ViewController: UIViewController {
     @IBOutlet var button2: UIButton!
     @IBOutlet var button3: UIButton!
     
+    let highScoreUDKey = "highScore"
+    
     var countries = [String]()
     var score = 0
+    var highestScore = 0
     var correctAnswer = 0
     var questionsAsked = 0
     
@@ -24,6 +27,8 @@ class ViewController: UIViewController {
         
         countries.append(contentsOf: ["estonia", "france", "germany", "ireland", "italy", "monaco", "nigeria",
                                       "poland", "russia", "spain", "uk", "us"])
+        
+        highestScore = UserDefaults.standard.integer(forKey: highScoreUDKey)
         
         button1.layer.borderWidth = 1
         button2.layer.borderWidth = 1
@@ -85,8 +90,21 @@ class ViewController: UIViewController {
         questionsAsked += 1
         title?.append(". Question \(questionsAsked) of \(Self.questionsPerRound)")
         
-        if questionsAsked == Self.questionsPerRound {
-            let ac = UIAlertController(title: "Game Over", message: "Your score is \(score).", preferredStyle: .actionSheet)
+        if questionsAsked >= Self.questionsPerRound {
+            let message: String
+            
+            if score > highestScore {
+                let prevRecord = highestScore
+                highestScore = score
+                UserDefaults.standard.set(highestScore, forKey: highScoreUDKey)
+                
+                message = "Congratulations! Your score is \(score). Previous record was \(prevRecord)."
+            } else {
+                message = "Your score is \(score)."
+            }
+            
+            
+            let ac = UIAlertController(title: "Game Over", message: message, preferredStyle: .actionSheet)
             ac.addAction(UIAlertAction(
                 title: "Continue",
                 style: .default,
